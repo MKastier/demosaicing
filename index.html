@@ -12,24 +12,24 @@
       <input type="file" id="imageUpload" accept="image/*" />
 
       <select id="algorithmSelect">
-        <option value="nearest">1. Najbližší sused (Nearest Neighbor)</option>
-        <option value="bilinear">2. Bilineárna interpolácia</option>
+        <option value="nearest">1. Nearest Neighbor</option>
+        <option value="bilinear">2. Bilinear Interpolation</option>
       </select>
         
-      <button id="processBtn" disabled>Použiť algoritmus</button>
+      <button id="processBtn" disabled>Aplikovať</button>
     </header>
 
     <main class="canvas-container">
       <div class="step">
-        <h3>1. Originál (RGB)</h3>
+        <h3>Originál</h3>
         <canvas id="Original"></canvas>
       </div>
       <div class="step">
-        <h3>2. Bayerova maska (Mozaika)</h3>
+        <h3>Bayerova maska (Mozaika)</h3>
         <canvas id="Bayer"></canvas>
       </div>
       <div class="step">
-        <h3>3. Debayerizovanie</h3>
+        <h3>Debayerizácia</h3>
         <canvas id="Debayer"></canvas>
       </div>
     </main>
