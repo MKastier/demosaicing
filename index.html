@@ -1,13 +1,33 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="sk">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>demosaicing-app</title>
+    <title>Demosaicing - Semestrálna práca</title>
+    <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
-    <div id="app"></div>
+    <header>
+      <h1>Webová aplikace demonstrující debayerizaci obrazu</h1>
+      <input type="file" id="imageUpload" accept="image/*" />
+      <button id="processBtn" disabled>Použiť</button>
+    </header>
+
+    <main class="canvas-container">
+      <div class="step">
+        <h3>1. Originál (RGB)</h3>
+        <canvas id="canvasOriginal"></canvas>
+      </div>
+      <div class="step">
+        <h3>2. Bayerova maska (Mozaika)</h3>
+        <canvas id="canvasBayer"></canvas>
+      </div>
+      <div class="step">
+        <h3>3. Debayerizovanie</h3>
+        <canvas id="canvasDebayer"></canvas>
+      </div>
+    </main>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

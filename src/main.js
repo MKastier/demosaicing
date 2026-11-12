@@ -1,60 +1,116 @@
-import './style.css'
-import heroImg from './assets/hero.png'
-import javascriptLogo from './assets/javascript.svg'
-import viteLogo from './assets/vite.svg'
-import { setupCounter } from './counter.js'
+const imageUpload = document.getElementById('imageUpload');
+const processBtn = document.getElementById('processBtn');
 
-document.querySelector('#app').innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${javascriptLogo}" class="framework" alt="JavaScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+const canvasOriginal = document.getElementById('canvasOriginal');
+const canvasBayer = document.getElementById('canvasBayer');
+const canvasDebayer = document.getElementById('canvasDebayer');
 
-<div class="ticks"></div>
+const ctxOriginal = canvasOriginal.getContext('2d');
+const ctxBayer = canvasBayer.getContext('2d');
+const ctxDebayer = canvasDebayer.getContext('2d');
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-          <img class="button-icon" src="${javascriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+let uploadedImage = new Image();
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+imageUpload.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-setupCounter(document.querySelector('#counter'))
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        uploadedImage.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+uploadedImage.onload = () => {
+
+    const w = uploadedImage.width;
+    const h = uploadedImage.height;
+    
+    [canvasOriginal, canvasBayer, canvasDebayer].forEach(c => {
+        c.width = w;
+        c.height = h;
+    });
+
+    ctxOriginal.drawImage(uploadedImage, 0, 0);
+    processBtn.disabled = false;
+};
+
+processBtn.addEventListener('click', () => {
+    const width = canvasOriginal.width;
+    const height = canvasOriginal.height;
+
+    const originalImageData = ctxOriginal.getImageData(0, 0, width, height);
+    
+    const bayerImageData = applyBayerMask(originalImageData, width, height);
+    ctxBayer.putImageData(bayerImageData, 0, 0);
+
+    const debayeredData = applySimpleDebayer(bayerImageData, width, height);
+    ctxDebayer.putImageData(debayeredData, 0, 0);
+});
+
+function applyBayerMask(imageData, width, height) {
+    const output = new ImageData(width, height);
+    const inData = imageData.data;
+    const outData = output.data;
+
+    for (let y = 0; y < height; y++) 
+    {
+        for (let x = 0; x < width; x++)
+          {
+            const i = (y * width + x) * 4;
+
+            outData[i + 3] = inData[i + 3]; 
+
+            if (y % 2 === 0) 
+              {
+                if (x % 2 === 0) {
+                    outData[i] = inData[i];
+                    outData[i+1] = 0;
+                    outData[i+2] = 0;
+                } else {
+                    outData[i] = 0;
+                    outData[i+1] = inData[i+1];
+                    outData[i+2] = 0;
+                }
+            } 
+            else 
+              {
+                if (x % 2 === 0)
+                {
+                  outData[i] = 0;
+                  outData[i+1] = inData[i+1]; 
+                  outData[i+2] = 0;
+                } 
+                else 
+                {
+                  outData[i] = 0;
+                  outData[i+1] = 0;
+                  outData[i+2] = inData[i+2];
+                }
+            }
+        }
+    }
+    return output;
+}
+
+function applySimpleDebayer(bayerData, width, height) {
+    const output = new ImageData(width, height);
+    const inData = bayerData.data;
+    const outData = output.data;
+
+    for (let i = 0; i < inData.length; i++) {
+        outData[i] = inData[i];
+    }
+
+    for (let y = 0; y < height - 1; y++) {
+        for (let x = 0; x < width - 1; x++) {
+            const i = (y * width + x) * 4;
+            
+            if (outData[i] === 0) outData[i] = inData[i + 4];
+            if (outData[i+1] === 0) outData[i+1] = inData[i + (width * 4) + 1];
+            if (outData[i+2] === 0) outData[i+2] = inData[i + (width * 4) + 6];
+        }
+    }
+    return output;
+}
