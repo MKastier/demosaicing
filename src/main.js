@@ -1,13 +1,13 @@
 const imageUpload = document.getElementById('imageUpload');
 const processBtn = document.getElementById('processBtn');
 
-const canvasOriginal = document.getElementById('canvasOriginal');
-const canvasBayer = document.getElementById('canvasBayer');
-const canvasDebayer = document.getElementById('canvasDebayer');
+const Original = document.getElementById('Original');
+const Bayer = document.getElementById('Bayer');
+const Debayer = document.getElementById('Debayer');
 
-const ctxOriginal = canvasOriginal.getContext('2d');
-const ctxBayer = canvasBayer.getContext('2d');
-const ctxDebayer = canvasDebayer.getContext('2d');
+const ctxOriginal = Original.getContext('2d');
+const ctxBayer = Bayer.getContext('2d');
+const ctxDebayer = Debayer.getContext('2d');
 
 let uploadedImage = new Image();
 
@@ -27,7 +27,7 @@ uploadedImage.onload = () => {
     const w = uploadedImage.width;
     const h = uploadedImage.height;
     
-    [canvasOriginal, canvasBayer, canvasDebayer].forEach(c => {
+    [Original, Bayer, Debayer].forEach(c => {
         c.width = w;
         c.height = h;
     });
@@ -37,8 +37,8 @@ uploadedImage.onload = () => {
 };
 
 processBtn.addEventListener('click', () => {
-    const width = canvasOriginal.width;
-    const height = canvasOriginal.height;
+    const width = Original.width;
+    const height = Original.height;
 
     const originalImageData = ctxOriginal.getImageData(0, 0, width, height);
     
@@ -114,3 +114,4 @@ function applySimpleDebayer(bayerData, width, height) {
     }
     return output;
 }
+
