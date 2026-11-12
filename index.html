@@ -10,7 +10,13 @@
     <header>
       <h1>Webová aplikace demonstrující debayerizaci obrazu</h1>
       <input type="file" id="imageUpload" accept="image/*" />
-      <button id="processBtn" disabled>Použiť</button>
+
+      <select id="algorithmSelect">
+        <option value="nearest">1. Najbližší sused (Nearest Neighbor)</option>
+        <option value="bilinear">2. Bilineárna interpolácia</option>
+      </select>
+        
+      <button id="processBtn" disabled>Použiť algoritmus</button>
     </header>
 
     <main class="canvas-container">
