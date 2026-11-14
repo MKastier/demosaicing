@@ -4,35 +4,198 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Demosaicing - Semestrálna práca</title>
-    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <header>
-      <h1>Webová aplikace demonstrující debayerizaci obrazu</h1>
-      <input type="file" id="imageUpload" accept="image/*" />
+    <div class="app-container">
+      
+      <header class="main-header">
+        <h1>Webová aplikácia demonštrujúca debayerizáciu obrazu</h1>
+      </header>
 
-      <select id="algorithmSelect">
-        <option value="nearest">1. Nearest Neighbor</option>
-        <option value="bilinear">2. Bilinear Interpolation</option>
-      </select>
+      <section class="block-section">
+        <div class="section-title">
+          <span class="step-num">1</span>
+          <div>
+            <h2>Najjednoduchšie metódy (Dynamické demonštrovanie debayerizácie)</h2>
+          </div>
+        </div>
+
+        <div class="controls-card">
+          <div class="control-group">
+            <select id="algorithmSelect" class="select-input">
+              <option value="nearest">1. Metóda najbližšieho suseda</option>
+              <option value="bilinear">2. Metóda bilineárnej interpolácie</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <div class="file-upload-wrapper">
+              <input type="file" id="imageUpload" accept="image/*" class="file-input-hidden" />
+              <label for="imageUpload" id="fileLabel" class="custom-file-btn">📁 Vybrať obrázok </label>
+            </div>
+          </div>
+          <button type="button" id="clearBtn" class="btn btn-danger" disabled>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <circle cx="12" cy="12" r="9.5" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+            </svg>Vymazať obrázok</button>
+
+          <button type="button" id="processBtn" class="btn btn-primary" disabled>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="9.5" />
+              <polygon points="10 8, 16.5 12, 10 16" fill="currentColor" stroke="none" />
+            </svg>Aplikovať algoritmus</button>
+            
+        </div>
+      
+        <div class="canvas-grid grid-3">
+          <div class="canvas-card">
+            <h3>1. Originál (RGB)</h3>
+            <div class="canvas-wrapper">
+              <canvas id="Original"></canvas>
+            </div>
+            <span class="card-caption">Pôvodný obrázok</span>
+          </div>
+
+          <div class="canvas-card">
+            <h3>2. Bayerova maska</h3>
+            <div class="canvas-wrapper">
+              <canvas id="Bayer"></canvas>
+            </div>
+            <span class="card-caption">Mozaika (1 farba / pixel)</span>
+          </div>
+
+          <div class="canvas-card">
+            <h3>3. Debayerizácia</h3>
+            <div class="canvas-wrapper">
+              <canvas id="Debayer"></canvas>
+            </div>
+            <span class="card-caption">Zrekonštruovaný obrázok</span>
+          </div>
+        </div>
+
+        <div class="metrics-card">
+          <h3>Objektívne metriky kvality debayerizácie</h3>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-label">PSNR (Pomer signálu k šumu)</span>
+              <span class="metric-value" id="metricPsnr">-- dB</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">MSE (Stredná kvadratická chyba)</span>
+              <span class="metric-value" id="metricMse">--</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">SSIM (Štrukturálna podobnosť)</span>
+              <span class="metric-value" id="metricSsim">--</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Čas výpočtu</span>
+              <span class="metric-value" id="metricTime">-- ms</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block-section">
+        <div class="section-title">
+          <span class="step-num">2</span>
+          <div>
+            <h2>Adaptívne metódy (Statické demonštrovanie debayerizácie)</h2>
+          </div>
+        </div>
+
+        <div class="canvas-grid grid-3">
+          <div class="canvas-card">
+            <h3>Originál (RGB)</h3>
+            <div class="canvas-wrapper">
+              <canvas id="StaticOriginal"></canvas>
+            </div>
+            <span class="card-caption">Pôvodný obrázok</span>
+          </div>
+
+          <div class="canvas-card">
+            <h3>Hamilton-Adams (HA)</h3>
+            <div class="canvas-wrapper">
+              <canvas id="CanvasHA"></canvas>
+            </div>
+            <span class="card-caption">Metóda podľa gradientov hrán</span>
+          </div>
+
+          <div class="canvas-card">
+            <h3>Malvar-He-Cutler (MHC)</h3>
+            <div class="canvas-wrapper">
+              <canvas id="CanvasMHC"></canvas>
+            </div>
+            <span class="card-caption">Lineárna interpolácia s Laplaciánovou korekciou</span>
+          </div>
+        </div>
+
+        <div class="metrics-card">
+          <h3>Objektívne metriky kvality debayerizácie</h3>
+
+          <div class="metric-row">
+            <div class="method-title">
+              <span class="method-dot"></span>
+              Hamilton-Adams (HA)
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">PSNR (Pomer signálu k šumu)</span>
+                <span class="metric-value" id="ha-metricPsnr">-- dB</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">MSE (Stredná kvadratická chyba)</span>
+                <span class="metric-value" id="ha-metricMse">--</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">SSIM (Štrukturálna podobnosť)</span>
+                <span class="metric-value" id="ha-metricSsim">--</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Čas výpočtu</span>
+                <span class="metric-value" id="ha-metricTime">-- ms</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-row">
+            <div class="method-title">
+              <span class="method-dot"></span>
+              Malvar-He-Cutler (MHC)
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">PSNR (Pomer signálu k šumu)</span>
+                <span class="metric-value" id="mhc-metricPsnr">-- dB</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">MSE (Stredná kvadratická chyba)</span>
+                <span class="metric-value" id="mhc-metricMse">--</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">SSIM (Štrukturálna podobnosť)</span>
+                <span class="metric-value" id="mhc-metricSsim">--</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Čas výpočtu</span>
+                <span class="metric-value" id="mhc-metricTime">-- ms</span>
+              </div>
+            </div>
+          </div>
+        </div>
         
-      <button id="processBtn" disabled>Aplikovať</button>
-    </header>
+      </section>
 
-    <main class="canvas-container">
-      <div class="step">
-        <h3>Originál</h3>
-        <canvas id="Original"></canvas>
-      </div>
-      <div class="step">
-        <h3>Bayerova maska (Mozaika)</h3>
-        <canvas id="Bayer"></canvas>
-      </div>
-      <div class="step">
-        <h3>Debayerizácia</h3>
-        <canvas id="Debayer"></canvas>
-      </div>
-    </main>
+      <footer class="main-footer">
+        <p>Semestrálna práca &bull; Miroslav Kaštier</p>
+      </footer>
+
+    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
