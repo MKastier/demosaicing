@@ -53,7 +53,8 @@ export function initImageImport()
         resetApp();
     });
 
-    function resetApp() {
+    function resetApp()
+    {
         imageUpload.value = '';
         fileLabel.textContent = '📁 Vybrať obrázok';
         fileLabel.removeAttribute('title');
@@ -69,9 +70,20 @@ export function initImageImport()
         clearBtn.disabled = true;
 
         const metricsIds = [
+            'metricPsnr', 'metricMse', 'metricSsim', 'metricTime',
             'ha-metricPsnr', 'ha-metricMse', 'ha-metricSsim', 'ha-metricTime',
             'mhc-metricPsnr', 'mhc-metricMse', 'mhc-metricSsim', 'mhc-metricTime'
         ];
+
+        for (const [id, defaultValue] of Object.entries(metricsIds))
+        {
+            const el = document.getElementById(id);
+
+            if (el)
+            {
+                el.textContent = defaultValue;
+            }
+        }
 
         metricsIds.forEach(id => {
             const el = document.getElementById(id);

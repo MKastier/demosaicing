@@ -1,4 +1,5 @@
 import { initImageImport } from './imageImport.js';
+import { calculateMSE, calculatePSNR, calculateSSIM } from './metrics.js';
 
 initImageImport();
 
@@ -26,6 +27,8 @@ processBtn.addEventListener('click', () => {
 
     let debayeredData;
 
+    const startTime = performance.now();
+
     if (selectedAlgorithm === 'nearest')
     {
         debayeredData = nearestNeighbor(bayerImageData, width, height);
@@ -36,9 +39,21 @@ processBtn.addEventListener('click', () => {
         debayeredData = bilinear(bayerImageData, width, height);
     }
 
+    const endTime = performance.now();
+    const executionTime = (endTime - startTime).toFixed(2);
+
     if (debayeredData)
     {
         ctxDebayer.putImageData(debayeredData, 0, 0);
+
+        const mse = calculateMSE(originalImageData, debayeredData);
+        const psnr = calculatePSNR(mse);
+        const ssim = calculateSSIM(originalImageData, debayeredData, width, height);
+
+        document.getElementById('metricTime').textContent = `${executionTime} ms`;
+        document.getElementById('metricMse').textContent = mse.toFixed(2);
+        document.getElementById('metricPsnr').textContent = typeof psnr === 'number' || !isNaN(psnr) ? `${psnr} dB` : psnr;
+        document.getElementById('metricSsim').textContent = ssim;
     }
 });
 
