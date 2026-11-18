@@ -1,6 +1,6 @@
 import { initImageImport } from './imageImport.js';
 import { calculateMSE, calculatePSNR, calculateSSIM } from './metrics.js';
-import { bayerMask, nearestNeighbor, bilinear, malvarHeCutler, hamiltonAdams } from './algorithms.js';
+import { bayerMask, nearestNeighbor, bilinear } from './algorithms.js';
 
 initImageImport();
 
