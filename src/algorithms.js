@@ -150,3 +150,114 @@ export function bilinear(bayerData, width, height)
     }
     return output;
 }
+
+export function hamiltonAdams(bayerData, width, height)
+{
+    const output = new ImageData(width, height);
+    const inData = bayerData.data;
+    const outData = output.data;
+
+    const val = (x, y, ch) => inData[getIdx(x, y, width, height) + ch];
+    const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
+
+    const G = new Float32Array(width * height);
+    const getG = (x, y) => {
+        const cx = Math.max(0, Math.min(width - 1, x));
+        const cy = Math.max(0, Math.min(height - 1, y));
+        return G[cy * width + cx];
+    };
+
+    for (let y = 0; y < height; y++)
+    {
+        const isEvenRow = (y % 2 === 0);
+        for (let x = 0; x < width; x++) {
+            const isEvenCol = (x % 2 === 0);
+            const gIdx = y * width + x;
+
+            if ((isEvenRow && !isEvenCol) || (!isEvenRow && isEvenCol))
+            {
+                G[gIdx] = val(x, y, 1);
+            } 
+            else
+            {
+                const ch = (isEvenRow && isEvenCol) ? 0 : 2;
+
+                const dh = Math.abs(val(x - 1, y, 1) - val(x + 1, y, 1)) +
+                           Math.abs(2 * val(x, y, ch) - val(x - 2, y, ch) - val(x + 2, y, ch));
+                const dv = Math.abs(val(x, y - 1, 1) - val(x, y + 1, 1)) +
+                           Math.abs(2 * val(x, y, ch) - val(x, y - 2, ch) - val(x, y + 2, ch));
+
+                const gh = (val(x - 1, y, 1) + val(x + 1, y, 1)) / 2 +
+                           (2 * val(x, y, ch) - val(x - 2, y, ch) - val(x + 2, y, ch)) / 4;
+                const gv = (val(x, y - 1, 1) + val(x, y + 1, 1)) / 2 +
+                           (2 * val(x, y, ch) - val(x, y - 2, ch) - val(x, y + 2, ch)) / 4;
+
+                if (dh < dv)
+                {
+                    G[gIdx] = gh;
+                } 
+                else if (dv < dh)
+                {
+                    G[gIdx] = gv;
+                }
+                else
+                {
+                    G[gIdx] = (gh + gv) / 2;
+                }
+            }
+        }
+    }
+
+    for (let y = 0; y < height; y++)
+    {
+        const isEvenRow = (y % 2 === 0);
+
+        for (let x = 0; x < width; x++)
+        {
+            const i = (y * width + x) * 4;
+            const isEvenCol = (x % 2 === 0);
+            const curG = G[y * width + x];
+
+            outData[i + 1] = clamp(curG);
+            outData[i + 3] = 255;
+
+            if (isEvenRow && isEvenCol)
+            {
+                outData[i] = val(x, y, 0);
+                const diffB = ((val(x - 1, y - 1, 2) - getG(x - 1, y - 1)) +
+                               (val(x + 1, y - 1, 2) - getG(x + 1, y - 1)) +
+                               (val(x - 1, y + 1, 2) - getG(x - 1, y + 1)) +
+                               (val(x + 1, y + 1, 2) - getG(x + 1, y + 1))) / 4;
+                outData[i + 2] = clamp(curG + diffB);
+
+            }
+            else if (!isEvenRow && !isEvenCol)
+            {
+                outData[i + 2] = val(x, y, 2);
+                const diffR = ((val(x - 1, y - 1, 0) - getG(x - 1, y - 1)) +
+                               (val(x + 1, y - 1, 0) - getG(x + 1, y - 1)) +
+                               (val(x - 1, y + 1, 0) - getG(x - 1, y + 1)) +
+                               (val(x + 1, y + 1, 0) - getG(x + 1, y + 1))) / 4;
+                outData[i] = clamp(curG + diffR);
+
+            }
+            else if (isEvenRow && !isEvenCol)
+            {
+                const diffR = ((val(x - 1, y, 0) - getG(x - 1, y)) + (val(x + 1, y, 0) - getG(x + 1, y))) / 2;
+                const diffB = ((val(x, y - 1, 2) - getG(x, y - 1)) + (val(x, y + 1, 2) - getG(x, y + 1))) / 2;
+                outData[i]     = clamp(curG + diffR);
+                outData[i + 2] = clamp(curG + diffB);
+
+            } 
+            else
+            {
+                const diffB = ((val(x - 1, y, 2) - getG(x - 1, y)) + (val(x + 1, y, 2) - getG(x + 1, y))) / 2;
+                const diffR = ((val(x, y - 1, 0) - getG(x, y - 1)) + (val(x, y + 1, 0) - getG(x, y + 1))) / 2;
+                outData[i]     = clamp(curG + diffR);
+                outData[i + 2] = clamp(curG + diffB);
+            }
+        }
+    }
+
+    return output;
+}

@@ -1,6 +1,6 @@
 import { initImageImport } from './imageImport.js';
 import { calculateMSE, calculatePSNR, calculateSSIM } from './metrics.js';
-import { bayerMask, nearestNeighbor, bilinear } from './algorithms.js';
+import { bayerMask, nearestNeighbor, bilinear, hamiltonAdams } from './algorithms.js';
 
 initImageImport();
 
@@ -63,9 +63,9 @@ processBtn.addEventListener('click', () => {
         const psnr = calculatePSNR(mse);
         const ssim = calculateSSIM(originalImageData, debayeredData, width, height);
 
-        document.getElementById('ha-metricTime').textContent = `${executionTime} ms`;
-        document.getElementById('ha-metricMse').textContent = mse.toFixed(2);
-        document.getElementById('ha-metricPsnr').textContent = `${psnr} dB`;
-        document.getElementById('ha-metricSsim').textContent = ssim;
+        document.getElementById('metricTime').textContent = `${executionTime} ms`;
+        document.getElementById('metricMse').textContent = mse.toFixed(2);
+        document.getElementById('metricPsnr').textContent = `${psnr} dB`;
+        document.getElementById('metricSsim').textContent = ssim;
     }
 });
