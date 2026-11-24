@@ -1,8 +1,10 @@
 import { initImageImport } from './imageImport.js';
+import { initZoom } from './zoom.js';
 import { calculateMSE, calculatePSNR, calculateSSIM } from './metrics.js';
 import { bayerMask, nearestNeighbor, bilinear, hamiltonAdams } from './algorithms.js';
 
 initImageImport();
+initZoom();
 
 const processBtn = document.getElementById('processBtn');
 const algorithmSelect = document.getElementById('algorithmSelect');

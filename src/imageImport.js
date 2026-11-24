@@ -1,3 +1,5 @@
+import { resetZoom } from './zoom.js';
+
 export function initImageImport()
 {
     const imageUpload = document.getElementById('imageUpload');
@@ -20,8 +22,8 @@ export function initImageImport()
             fileLabel.textContent = `📁 ${file.name}`;
             fileLabel.title = file.name;
             clearBtn.disabled = false;
-        }
-
+        } 
+        
         else
         {
             resetApp();
@@ -36,15 +38,15 @@ export function initImageImport()
     });
 
     uploadedImage.onload = () => {
-        const w = uploadedImage.width;
-        const h = uploadedImage.height;
+        const w = Math.max(2, Math.floor(uploadedImage.width / 2) * 2);
+        const h = Math.max(2, Math.floor(uploadedImage.height / 2) * 2);
 
         [Original, Bayer, Debayer].forEach(c => {
             c.width = w;
             c.height = h;
         });
 
-        ctxOriginal.drawImage(uploadedImage, 0, 0);
+        ctxOriginal.drawImage(uploadedImage, 0, 0, w, h);
 
         processBtn.disabled = false;
     };
@@ -75,21 +77,14 @@ export function initImageImport()
             'mhc-metricPsnr', 'mhc-metricMse', 'mhc-metricSsim', 'mhc-metricTime'
         ];
 
-        for (const [id, defaultValue] of Object.entries(metricsIds))
-        {
-            const el = document.getElementById(id);
-
-            if (el)
-            {
-                el.textContent = defaultValue;
-            }
-        }
-
         metricsIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                el.textContent = id.includes('Psnr') ? '-- dB' : (id.includes('Time') ? '-- ms' : '--');
+                el.textContent = id.toLowerCase().includes('psnr')
+                    ? '-- dB'
+                    : (id.toLowerCase().includes('time') ? '-- ms' : '--');
             }
         });
+        resetZoom();
     }
 }
