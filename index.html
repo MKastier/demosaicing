@@ -36,6 +36,15 @@
               <label for="imageUpload" id="fileLabel" class="custom-file-btn">📁 Vybrať obrázok </label>
             </div>
           </div>
+
+          <div class="zoom-buttons">
+            <button type="button" class="zoom-btn active" data-zoom="1">1×</button>
+            <button type="button" class="zoom-btn" data-zoom="2">2×</button>
+            <button type="button" class="zoom-btn" data-zoom="4">4×</button>
+            <button type="button" class="zoom-btn" data-zoom="8">8×</button>
+            <button type="button" class="zoom-btn" data-zoom="16">16×</button>
+          </div>
+
           <button type="button" id="clearBtn" class="btn btn-danger" disabled>
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
               <circle cx="12" cy="12" r="9.5" />
@@ -49,17 +58,6 @@
               <polygon points="10 8, 16.5 12, 10 16" fill="currentColor" stroke="none" />
             </svg>Aplikovať algoritmus</button>
             
-        </div>
-
-        <div class="zoom-toolbar">
-          <span class="zoom-label">🔍 Priblíženie detailov:</span>
-          <div class="zoom-buttons">
-            <button type="button" class="zoom-btn active" data-zoom="1">1×</button>
-            <button type="button" class="zoom-btn" data-zoom="2">2×</button>
-            <button type="button" class="zoom-btn" data-zoom="4">4×</button>
-            <button type="button" class="zoom-btn" data-zoom="8">8×</button>
-            <button type="button" class="zoom-btn" data-zoom="16">16×</button>
-          </div>
         </div>
 
         <div class="canvas-grid grid-3">
@@ -115,94 +113,67 @@
         <div class="section-title">
           <span class="step-num">2</span>
           <div>
-            <h2>Adaptívne metódy (Statické demonštrovanie debayerizácie)</h2>
+            <h2>Porovnanie všetkých metód na referenčnom obrázku</h2>
           </div>
         </div>
-
-        <div class="canvas-grid grid-3">
+      
+        <div class="canvas-grid-5">
           <div class="canvas-card">
             <h3>Originál (RGB)</h3>
             <div class="canvas-wrapper">
               <canvas id="StaticOriginal"></canvas>
             </div>
-            <span class="card-caption">Pôvodný obrázok</span>
           </div>
-
+      
           <div class="canvas-card">
-            <h3>Hamilton-Adams (HA)</h3>
+            <h3>1. Najbližší sused (NN)</h3>
             <div class="canvas-wrapper">
-              <canvas id="CanvasHA"></canvas>
+              <canvas id="CanvasNN"></canvas>
             </div>
-            <span class="card-caption">Metóda podľa gradientov hrán</span>
           </div>
-
+      
           <div class="canvas-card">
-            <h3>Malvar-He-Cutler (MHC)</h3>
+            <h3>2. Bilineárna (BI)</h3>
+            <div class="canvas-wrapper">
+              <canvas id="CanvasBI"></canvas>
+            </div>
+          </div>
+      
+          <div class="canvas-card">
+            <h3>3. Malvar-He-Cutler (MHC)</h3>
             <div class="canvas-wrapper">
               <canvas id="CanvasMHC"></canvas>
             </div>
-            <span class="card-caption">Lineárna interpolácia s Laplaciánovou korekciou</span>
+          </div>
+      
+          <div class="canvas-card">
+            <h3>4. Hamilton-Adams (HA)</h3>
+            <div class="canvas-wrapper">
+              <canvas id="CanvasHA"></canvas>
+            </div>
           </div>
         </div>
 
-        <div class="metrics-card">
-          <h3>Objektívne metriky kvality debayerizácie</h3>
-
-          <div class="metric-row">
-            <div class="method-title">
-              <span class="method-dot"></span>
-              Hamilton-Adams (HA)
-            </div>
-
-            <div class="metrics-grid">
-              <div class="metric-item">
-                <span class="metric-label">PSNR (Pomer signálu k šumu)</span>
-                <span class="metric-value" id="ha-metricPsnr">-- dB</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">MSE (Stredná kvadratická chyba)</span>
-                <span class="metric-value" id="ha-metricMse">--</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">SSIM (Štrukturálna podobnosť)</span>
-                <span class="metric-value" id="ha-metricSsim">--</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">Čas výpočtu</span>
-                <span class="metric-value" id="ha-metricTime">-- ms</span>
-              </div>
-            </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h4>PSNR &uarr; (Vyššia hodnota je lepšia)</h4>
+            <div class="chart-box"><canvas id="chartPsnr"></canvas></div>
           </div>
-
-          <div class="metric-row">
-            <div class="method-title">
-              <span class="method-dot"></span>
-              Malvar-He-Cutler (MHC)
-            </div>
-
-            <div class="metrics-grid">
-              <div class="metric-item">
-                <span class="metric-label">PSNR (Pomer signálu k šumu)</span>
-                <span class="metric-value" id="mhc-metricPsnr">-- dB</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">MSE (Stredná kvadratická chyba)</span>
-                <span class="metric-value" id="mhc-metricMse">--</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">SSIM (Štrukturálna podobnosť)</span>
-                <span class="metric-value" id="mhc-metricSsim">--</span>
-              </div>
-              <div class="metric-item">
-                <span class="metric-label">Čas výpočtu</span>
-                <span class="metric-value" id="mhc-metricTime">-- ms</span>
-              </div>
-            </div>
+          <div class="chart-card">
+            <h4>MSE &darr; (Nižšia chyba je lepšia)</h4>
+            <div class="chart-box"><canvas id="chartMse"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h4>SSIM &uarr; (Vyššia podobnosť k 1 je lepšia)</h4>
+            <div class="chart-box"><canvas id="chartSsim"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h4>Čas výpočtu &darr; (Rýchlosť algoritmu)</h4>
+            <div class="chart-box"><canvas id="chartTime"></canvas></div>
           </div>
         </div>
-        
       </section>
-
+    
       <footer class="main-footer">
         <p>Semestrálna práca &bull; Miroslav Kaštier</p>
       </footer>
