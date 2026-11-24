@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import { bayerMask, nearestNeighbor, bilinear, hamiltonAdams } from './algorithms.js';
+import { bayerMask, nearestNeighbor, bilinear, hamiltonAdams, malvarHeCutler } from './algorithms.js';
 import { calculateMSE, calculatePSNR, calculateSSIM } from './metrics.js';
 
 const barLabelsPlugin = {
@@ -21,9 +21,19 @@ const barLabelsPlugin = {
                 ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
                 ctx.textAlign = 'center';
 
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(text, bar.x, bar.y + barHeight / 2);
+                if (barHeight > 20)
+                {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(text, bar.x, bar.y + barHeight / 2);
+                }
+                
+                else
+                {
+                    ctx.fillStyle = '#0f172a';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(text, bar.x, bar.y - 6);
+                }
 
                 ctx.restore();
             });
@@ -38,7 +48,7 @@ export function initChart()
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    img.src = `${import.meta.env.BASE_URL}kodim18.png`;
+    img.src = `${import.meta.env.BASE_URL}/imgs/kodim19.png`;
 
     img.onload = () => {
         const w = Math.max(2, Math.floor(img.width / 2) * 2);
@@ -97,10 +107,10 @@ function runAllBenchmarks(staticCanvas)
     const bayerData = bayerMask(originalData, width, height);
 
     const methods = [
-        { short: 'NN', canvasId: 'CanvasNN', fn: nearestNeighbor, color: '#94a3b8' },
-        { short: 'BI', canvasId: 'CanvasBI', fn: bilinear, color: '#f59e0b' },
-        // { short: 'MHC', canvasId: 'CanvasMHC', fn: malvarHeCutler, color: '#3b82f6' },
-        { short: 'HA', canvasId: 'CanvasHA', fn: hamiltonAdams, color: '#10b981' }
+        { short: 'NN', canvasId: 'CanvasNN', fn: nearestNeighbor, color: '#dc2626' },
+        { short: 'BI', canvasId: 'CanvasBI', fn: bilinear, color: '#10b981' },
+        { short: 'HA', canvasId: 'CanvasHA', fn: hamiltonAdams, color: '#f59e0b' },
+        { short: 'MHC', canvasId: 'CanvasMHC', fn: malvarHeCutler, color: '#2563eb' }
     ];
 
     const results = methods.map(m => {

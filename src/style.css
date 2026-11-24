@@ -471,14 +471,51 @@ canvas {
   font-weight: 500;
 }
 
-.metric-value {
+.metric-value
+{
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-main);
   font-family: ui-monospace, Consolas, monospace;
 }
 
-.main-footer {
+.chart-layout
+{
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.chart-original .canvas-card {
+  width: 100%;
+}
+
+.chart-methods
+{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 960px)
+{
+  .chart-layout
+  {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px)
+{
+  .chart-methods
+  {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main-footer
+{
   text-align: center;
   padding: 20px;
   color: var(--text-muted);

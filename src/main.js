@@ -2,7 +2,7 @@ import { initImageImport } from './imageImport.js';
 import { initZoom } from './zoom.js';
 import { initChart } from './charts.js';
 import { calculateMSE, calculatePSNR, calculateSSIM } from './metrics.js';
-import { bayerMask, nearestNeighbor, bilinear, hamiltonAdams } from './algorithms.js';
+import { bayerMask, nearestNeighbor, bilinear, hamiltonAdams, malvarHeCutler } from './algorithms.js';
 
 initImageImport();
 initZoom();

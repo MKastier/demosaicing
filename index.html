@@ -17,7 +17,7 @@
         <div class="section-title">
           <span class="step-num">1</span>
           <div>
-            <h2>Najjednoduchšie metódy (Dynamické demonštrovanie debayerizácie)</h2>
+            <h2>Dynamické demonštrovanie debayerizácie</h2>
           </div>
         </div>
 
@@ -27,6 +27,7 @@
               <option value="nearest">1. Metóda najbližšieho suseda</option>
               <option value="bilinear">2. Metóda bilineárnej interpolácie</option>
               <option value="ha">3. Metóda Hamilton-Adams</option>
+              <option value="mhc">4. Metóda Malvat-He-Cutler</option>
             </select>
           </div>
 
@@ -117,43 +118,53 @@
           </div>
         </div>
       
-        <div class="canvas-grid-5">
-          <div class="canvas-card">
-            <h3>Originál (RGB)</h3>
-            <div class="canvas-wrapper">
-              <canvas id="StaticOriginal"></canvas>
+        <div class="chart-layout">
+          
+          <div class="chart-original">
+            <div class="canvas-card">
+              <h3>Originál (RGB)</h3>
+              <div class="canvas-wrapper">
+                <canvas id="StaticOriginal"></canvas>
+              </div>
             </div>
           </div>
-      
-          <div class="canvas-card">
-            <h3>1. Najbližší sused (NN)</h3>
-            <div class="canvas-wrapper">
-              <canvas id="CanvasNN"></canvas>
+
+          <div class="chart-methods">
+            <div class="canvas-card">
+              <h3>1. Najbližší sused (NN)</h3>
+              <div class="canvas-wrapper">
+                <canvas id="CanvasNN"></canvas>
+              </div>
+            </div>
+
+            <div class="canvas-card">
+              <h3>2. Bilineárna (BI)</h3>
+              <div class="canvas-wrapper">
+                <canvas id="CanvasBI"></canvas>
+              </div>
+            </div>
+
+            <div class="canvas-card">
+              <h3>3. Hamilton-Adams (HA)</h3>
+              <div class="canvas-wrapper">
+                <canvas id="CanvasHA"></canvas>
+              </div>
+            </div>
+
+            <div class="canvas-card">
+              <h3>4. Malvar-He-Cutler (MHC)</h3>
+              <div class="canvas-wrapper">
+                <canvas id="CanvasMHC"></canvas>
+              </div>
             </div>
           </div>
-      
-          <div class="canvas-card">
-            <h3>2. Bilineárna (BI)</h3>
-            <div class="canvas-wrapper">
-              <canvas id="CanvasBI"></canvas>
-            </div>
-          </div>
-      
-          <div class="canvas-card">
-            <h3>3. Malvar-He-Cutler (MHC)</h3>
-            <div class="canvas-wrapper">
-              <canvas id="CanvasMHC"></canvas>
-            </div>
-          </div>
-      
-          <div class="canvas-card">
-            <h3>4. Hamilton-Adams (HA)</h3>
-            <div class="canvas-wrapper">
-              <canvas id="CanvasHA"></canvas>
-            </div>
-          </div>
+
         </div>
 
+        <div class="controls-card">
+          <h3>Porovnanie metrík prostredníctvom grafov</h3>
+        </div>
+      
         <div class="charts-grid">
           <div class="chart-card">
             <h4>PSNR &uarr; (Vyššia hodnota je lepšia)</h4>

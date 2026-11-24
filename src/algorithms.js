@@ -261,3 +261,98 @@ export function hamiltonAdams(bayerData, width, height)
 
     return output;
 }
+
+export function malvarHeCutler(bayerData, width, height)
+{
+    const output = new ImageData(width, height);
+    const inData = bayerData.data;
+    const outData = output.data;
+
+    const val = (x, y, ch) => inData[getIdx(x, y, width, height) + ch];
+    const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
+
+    for (let y = 0; y < height; y++)
+    {
+        const isEvenRow = (y % 2 === 0);
+        for (let x = 0; x < width; x++)
+        {
+            const i = (y * width + x) * 4;
+            const isEvenCol = (x % 2 === 0);
+            outData[i + 3] = 255;
+
+            if (isEvenRow && isEvenCol)
+            {
+                outData[i] = val(x, y, 0);
+
+                const gEst = (4 * val(x, y, 0) +
+                              2 * (val(x - 1, y, 1) + val(x + 1, y, 1) + val(x, y - 1, 1) + val(x, y + 1, 1)) -
+                              (val(x - 2, y, 0) + val(x + 2, y, 0) + val(x, y - 2, 0) + val(x, y + 2, 0))) / 8;
+                outData[i + 1] = clamp(gEst);
+
+                const bEst = (12 * val(x, y, 0) +
+                              4 * (val(x - 1, y - 1, 2) + val(x + 1, y - 1, 2) + val(x - 1, y + 1, 2) + val(x + 1, y + 1, 2)) -
+                              3 * (val(x - 2, y, 0) + val(x + 2, y, 0) + val(x, y - 2, 0) + val(x, y + 2, 0))) / 16;
+                outData[i + 2] = clamp(bEst);
+
+            }
+            
+            else if (!isEvenRow && !isEvenCol)
+            {
+                outData[i + 2] = val(x, y, 2);
+
+                const gEst = (4 * val(x, y, 2) +
+                              2 * (val(x - 1, y, 1) + val(x + 1, y, 1) + val(x, y - 1, 1) + val(x, y + 1, 1)) -
+                              (val(x - 2, y, 2) + val(x + 2, y, 2) + val(x, y - 2, 2) + val(x, y + 2, 2))) / 8;
+                outData[i + 1] = clamp(gEst);
+
+                const rEst = (12 * val(x, y, 2) +
+                              4 * (val(x - 1, y - 1, 0) + val(x + 1, y - 1, 0) + val(x - 1, y + 1, 0) + val(x + 1, y + 1, 0)) -
+                              3 * (val(x - 2, y, 2) + val(x + 2, y, 2) + val(x, y - 2, 2) + val(x, y + 2, 2))) / 16;
+                outData[i] = clamp(rEst);
+
+            }
+            
+            else if (isEvenRow && !isEvenCol)
+            {
+
+                outData[i + 1] = val(x, y, 1);
+
+                const rEst = (10 * val(x, y, 1) +
+                              8 * (val(x - 1, y, 0) + val(x + 1, y, 0)) -
+                              2 * (val(x - 2, y, 1) + val(x + 2, y, 1) +
+                                   val(x - 1, y - 1, 1) + val(x + 1, y - 1, 1) + val(x - 1, y + 1, 1) + val(x + 1, y + 1, 1)) +
+                              (val(x, y - 2, 1) + val(x, y + 2, 1))) / 16;
+                outData[i] = clamp(rEst);
+
+                const bEst = (10 * val(x, y, 1) +
+                              8 * (val(x, y - 1, 2) + val(x, y + 1, 2)) -
+                              2 * (val(x, y - 2, 1) + val(x, y + 2, 1) +
+                                   val(x - 1, y - 1, 1) + val(x + 1, y - 1, 1) + val(x - 1, y + 1, 1) + val(x + 1, y + 1, 1)) +
+                              (val(x - 2, y, 1) + val(x + 2, y, 1))) / 16;
+                outData[i + 2] = clamp(bEst);
+
+            }
+            
+            else
+            {
+                outData[i + 1] = val(x, y, 1);
+
+                const rEst = (10 * val(x, y, 1) +
+                              8 * (val(x, y - 1, 0) + val(x, y + 1, 0)) -
+                              2 * (val(x, y - 2, 1) + val(x, y + 2, 1) +
+                                   val(x - 1, y - 1, 1) + val(x + 1, y - 1, 1) + val(x - 1, y + 1, 1) + val(x + 1, y + 1, 1)) +
+                              (val(x - 2, y, 1) + val(x + 2, y, 1))) / 16;
+                outData[i] = clamp(rEst);
+
+                const bEst = (10 * val(x, y, 1) +
+                              8 * (val(x - 1, y, 2) + val(x + 1, y, 2)) -
+                              2 * (val(x - 2, y, 1) + val(x + 2, y, 1) +
+                                   val(x - 1, y - 1, 1) + val(x + 1, y - 1, 1) + val(x - 1, y + 1, 1) + val(x + 1, y + 1, 1)) +
+                              (val(x, y - 2, 1) + val(x, y + 2, 1))) / 16;
+                outData[i + 2] = clamp(bEst);
+            }
+        }
+    }
+    
+    return output;
+}
